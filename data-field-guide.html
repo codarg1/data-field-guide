@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Data Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,600;0,800;1,400&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#fbfcfc; --panel:#ffffff; --ink:#17324d; --slate:#4b5d6b; --line:#d5dee5;
+  --sky:#e3edf4; --signal:#f2c14e; --signal-ink:#5c4300; --good:#1f6b4a; --warn:#8a5a00; --bad:#9b2c2c;
+  --bar1:#2f6f8f; --bar2:#c46a2b;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0f1a24; --panel:#16232f; --ink:#e6eef4; --slate:#a3b4c2; --line:#2a3a48;
+    --sky:#1c2e3d; --signal:#f2c14e; --signal-ink:#2a1f00; --good:#6fd3a3; --warn:#f2c14e; --bad:#f19a9a;
+    --bar1:#6fb3d6; --bar2:#f0a06a;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0f1a24; --panel:#16232f; --ink:#e6eef4; --slate:#a3b4c2; --line:#2a3a48;
+  --sky:#1c2e3d; --signal:#f2c14e; --signal-ink:#2a1f00; --good:#6fd3a3; --warn:#f2c14e; --bad:#f19a9a;
+  --bar1:#6fb3d6; --bar2:#f0a06a;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 72px)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.55}
+a{color:inherit;text-decoration-thickness:1px;text-underline-offset:3px}
+a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px;border-radius:4px}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px}
+header.top{padding:48px 0 28px}
+h1{font-family:"Newsreader",Georgia,serif;font-weight:500;font-size:clamp(40px,8vw,64px);line-height:1.02;margin:0 0 14px;letter-spacing:-0.01em}
+.lede{font-size:19px;color:var(--slate);max-width:60ch;margin:0}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--line)}
+.tabrow{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.tabrow::-webkit-scrollbar{display:none}
+.tab{appearance:none;border:0;background:none;color:var(--slate);font:inherit;font-weight:600;padding:16px 14px 14px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--signal)}
+section.panel{padding:32px 0 64px}
+section.panel[hidden]{display:none}
+h2{font-family:"Newsreader",Georgia,serif;font-weight:600;font-size:32px;line-height:1.15;margin:0 0 8px}
+h3{font-size:18px;margin:0 0 4px}
+.sub{color:var(--slate);margin:0 0 24px;max-width:62ch}
+/* sources */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.chip{appearance:none;font:inherit;font-size:15px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:6px 14px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.srclist{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.srclist li{padding:18px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:4px 16px}
+.srclist .name{font-weight:700;font-size:18px}
+.srclist .what{grid-column:1/-1;color:var(--ink)}
+.srclist .tip{grid-column:1/-1;color:var(--slate);font-size:15px}
+.srclist .tip b{color:var(--ink);font-weight:600}
+.kind{font-size:13px;color:var(--slate);border:1px solid var(--line);padding:2px 8px;border-radius:4px;align-self:start}
+/* checklist */
+.q{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px 20px 16px;margin-bottom:14px}
+.q label{display:flex;gap:14px;align-items:flex-start;cursor:pointer}
+.q input{width:22px;height:22px;margin-top:3px;accent-color:var(--ink);flex:none}
+.q .ask{font-family:"Newsreader",Georgia,serif;font-size:24px;font-weight:600;line-height:1.2}
+.q ul{margin:10px 0 0 36px;padding:0;color:var(--slate)}
+.q ul li{margin-bottom:4px}
+.q.done{border-color:var(--ink)}
+.progress{display:flex;align-items:center;gap:14px;margin:8px 0 20px;flex-wrap:wrap}
+.meter{flex:1;min-width:160px;height:8px;background:var(--sky);border-radius:999px;overflow:hidden}
+.meter span{display:block;height:100%;width:0;background:var(--ink);transition:width .25s}
+@media (prefers-reduced-motion:reduce){.meter span{transition:none}}
+.btn{appearance:none;font:inherit;font-weight:600;font-size:15px;border:1px solid var(--ink);background:transparent;color:var(--ink);padding:8px 16px;border-radius:6px;cursor:pointer}
+.btn.primary{background:var(--ink);color:var(--paper)}
+/* calculator */
+.calc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px}
+.modes{display:flex;gap:4px;background:var(--sky);padding:4px;border-radius:8px;margin-bottom:22px;width:max-content;max-width:100%;overflow-x:auto}
+.mode{appearance:none;border:0;font:inherit;font-size:15px;font-weight:600;padding:8px 14px;border-radius:6px;background:transparent;color:var(--slate);cursor:pointer;white-space:nowrap}
+.mode[aria-pressed="true"]{background:var(--panel);color:var(--ink)}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+fieldset{border:0;margin:0;padding:0}
+legend{font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.swatch{width:12px;height:12px;border-radius:2px;display:inline-block}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.field span{font-size:14px;color:var(--slate)}
+input[type="number"],input[type="text"],select{font:inherit;font-size:18px;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);width:100%}
+.opts{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin:8px 0 4px;font-size:15px;color:var(--slate)}
+.opts select{width:auto;font-size:15px;padding:6px 8px}
+.result{margin-top:22px;padding:20px;border-radius:10px;background:var(--sky)}
+.verdict{font-family:"Newsreader",Georgia,serif;font-size:28px;font-weight:600;line-height:1.15;margin:0 0 6px}
+.verdict.yes{color:var(--good)} .verdict.no{color:var(--warn)}
+.result p{margin:6px 0 0;color:var(--ink)}
+.result .fine{color:var(--slate);font-size:14px}
+.viz{margin-top:16px}
+.viz svg{width:100%;height:auto;display:block}
+.hidden{display:none}
+.callout{border-left:4px solid var(--signal);padding:4px 0 4px 16px;margin:24px 0 0;color:var(--slate)}
+/* glossary */
+.gsearch{margin-bottom:20px}
+dl{margin:0}
+dl div{padding:16px 0;border-bottom:1px solid var(--line)}
+dt{font-weight:700;font-size:18px}
+dd{margin:4px 0 0;color:var(--ink);max-width:66ch}
+dd .eg{color:var(--slate)}
+.empty{color:var(--slate);padding:20px 0}
+footer{border-top:1px solid var(--line);padding:28px 0 48px;color:var(--slate);font-size:15px}
+footer p{margin:0 0 6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Data Field Guide</h1>
+    <p class="lede">A pocket reference for finding, checking, and using numbers in policy work. Built for Every Texan fellows, for use long after the fellowship.</p>
+  </header>
+</div>
+
+<nav class="tabs" aria-label="Sections">
+  <div class="wrap tabrow" role="tablist">
+    <button class="tab" role="tab" id="t-sources" aria-controls="p-sources" aria-selected="true">Find data</button>
+    <button class="tab" role="tab" id="t-check" aria-controls="p-check" aria-selected="false" tabindex="-1">Check a stat</button>
+    <button class="tab" role="tab" id="t-calc" aria-controls="p-calc" aria-selected="false" tabindex="-1">Is it different?</button>
+    <button class="tab" role="tab" id="t-gloss" aria-controls="p-gloss" aria-selected="false" tabindex="-1">Glossary</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- SOURCES -->
+<section class="panel" id="p-sources" role="tabpanel" aria-labelledby="t-sources">
+  <h2>Where to look</h2>
+  <p class="sub">Start with what you want to know, then pick the source that measures it. Survey data estimates for everyone; administrative data counts who a program touched.</p>
+  <div class="chips" id="chips" aria-label="Filter by topic"></div>
+  <ul class="srclist" id="srclist"></ul>
+</section>
+
+<!-- CHECKLIST -->
+<section class="panel" id="p-check" role="tabpanel" aria-labelledby="t-check" hidden>
+  <h2>Before you cite it</h2>
+  <p class="sub">Run any statistic through these questions. If you can't answer one, that's your next search, not a reason to guess.</p>
+  <div class="progress"><div class="meter" aria-hidden="true"><span id="meter"></span></div><span id="count">0 of 6 answered</span><button class="btn" id="resetCheck" type="button">Start over</button></div>
+  <div id="checklist"></div>
+  <div class="q" style="background:var(--sky);border-color:transparent">
+    <div class="ask" style="margin-bottom:8px">Now rewrite the claim</div>
+    <p style="margin:0;color:var(--slate)">Name the source and year, the group, the geography, and the uncertainty if it matters. A claim you can defend usually sounds less dramatic, and that's fine.</p>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section class="panel" id="p-calc" role="tabpanel" aria-labelledby="t-calc" hidden>
+  <h2>Is the difference real?</h2>
+  <p class="sub">American Community Survey numbers are estimates with a margin of error (MOE). Use these tools before you say one place is “higher” than another or combine estimates.</p>
+
+  <div class="calc">
+    <div class="modes" role="group" aria-label="Calculator">
+      <button class="mode" type="button" data-mode="compare" aria-pressed="true">Compare two</button>
+      <button class="mode" type="button" data-mode="reliable" aria-pressed="false">Check reliability</button>
+      <button class="mode" type="button" data-mode="sum" aria-pressed="false">Add estimates</button>
+    </div>
+
+    <!-- compare -->
+    <div id="m-compare">
+      <div class="pair">
+        <fieldset>
+          <legend><i class="swatch" style="background:var(--bar1)"></i>Estimate A</legend>
+          <label class="field"><span>Label</span><input type="text" id="aName" value="County A"></label>
+          <label class="field"><span>Estimate</span><input type="number" id="aEst" inputmode="decimal" step="any" value="18.2"></label>
+          <label class="field"><span>Margin of error (±)</span><input type="number" id="aMoe" inputmode="decimal" step="any" min="0" value="2.1"></label>
+        </fieldset>
+        <fieldset>
+          <legend><i class="swatch" style="background:var(--bar2)"></i>Estimate B</legend>
+          <label class="field"><span>Label</span><input type="text" id="bName" value="County B"></label>
+          <label class="field"><span>Estimate</span><input type="number" id="bEst" inputmode="decimal" step="any" value="16.9"></label>
+          <label class="field"><span>Margin of error (±)</span><input type="number" id="bMoe" inputmode="decimal" step="any" min="0" value="1.8"></label>
+        </fieldset>
+      </div>
+      <div class="opts">
+        <label>MOEs are published at <select id="cl"><option value="1.645" selected>90% (ACS standard)</option><option value="1.96">95%</option><option value="2.576">99%</option></select></label>
+      </div>
+      <div class="result" aria-live="polite">
+        <p class="verdict" id="cVerdict"></p>
+        <p id="cText"></p>
+        <div class="viz" id="cViz"></div>
+        <p class="fine" id="cFine"></p>
+      </div>
+    </div>
+
+    <!-- reliability -->
+    <div id="m-reliable" class="hidden">
+      <div class="pair">
+        <label class="field"><span>Estimate</span><input type="number" id="rEst" inputmode="decimal" step="any" value="1250"></label>
+        <label class="field"><span>Margin of error (±)</span><input type="number" id="rMoe" inputmode="decimal" step="any" min="0" value="410"></label>
+      </div>
+      <div class="opts">
+        <label>MOE confidence level <select id="rCl"><option value="1.645" selected>90% (ACS standard)</option><option value="1.96">95%</option></select></label>
+      </div>
+      <div class="result" aria-live="polite">
+        <p class="verdict" id="rVerdict"></p>
+        <p id="rText"></p>
+        <p class="fine">The coefficient of variation (CV) is the standard error as a share of the estimate. Common practice: under 15% is reliable, 15–30% use with caution, over 30% treat as unreliable. Thresholds vary by organization.</p>
+      </div>
+    </div>
+
+    <!-- sum -->
+    <div id="m-sum" class="hidden">
+      <p style="margin:0 0 14px;color:var(--slate)">Adding counts across counties, age groups, or categories? The combined MOE isn't the sum of the MOEs. Enter each estimate and its MOE.</p>
+      <div id="sumRows"></div>
+      <button class="btn" type="button" id="addRow">Add a row</button>
+      <div class="result" aria-live="polite">
+        <p class="verdict" id="sVerdict"></p>
+        <p id="sText"></p>
+        <p class="fine">Uses the Census Bureau's approximation: combined MOE = √(MOE₁² + MOE₂² + …). It's an approximation, and less accurate when combining many estimates or estimates of zero.</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="callout">These tests assume the estimates are independent. Comparing a county to the state it's part of, or overlapping 5-year periods (2019–23 vs. 2020–24), needs a different approach. When in doubt, ask a data person.</p>
+</section>
+
+<!-- GLOSSARY -->
+<section class="panel" id="p-gloss" role="tabpanel" aria-labelledby="t-gloss" hidden>
+  <h2>Plain-language glossary</h2>
+  <p class="sub">The terms that show up in data reports and testimony, in words you can repeat to a legislator.</p>
+  <div class="gsearch"><label class="field"><span>Search terms</span><input type="text" id="gq" placeholder="Try “median” or “FPL”"></label></div>
+  <dl id="gloss"></dl>
+  <p class="empty hidden" id="gEmpty">No matching terms. Try a shorter word.</p>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Data 101 · Every Texan Research and Data</p>
+    <p>Source links point to public agencies and nonprofits. Check each source's documentation for the latest release.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  /* ---------- tabs ---------- */
+  var tabs=[].slice.call(document.querySelectorAll('.tab'));
+  function selectTab(t,focus){
+    tabs.forEach(function(x){
+      var on=x===t;
+      x.setAttribute('aria-selected',on);
+      x.tabIndex=on?0:-1;
+      document.getElementById(x.getAttribute('aria-controls')).hidden=!on;
+    });
+    if(focus) t.focus();
+  }
+  tabs.forEach(function(t,i){
+    t.addEventListener('click',function(){selectTab(t)});
+    t.addEventListener('keydown',function(e){
+      if(e.key==='ArrowRight'){selectTab(tabs[(i+1)%tabs.length],true);e.preventDefault()}
+      if(e.key==='ArrowLeft'){selectTab(tabs[(i-1+tabs.length)%tabs.length],true);e.preventDefault()}
+    });
+  });
+
+  /* ---------- sources ---------- */
+  var S=[
+    {n:"data.census.gov",u:"https://data.census.gov",k:"Survey",t:["Demographics","Income & poverty","Health","Housing","Work"],w:"Official home for American Community Survey and decennial census tables, down to census tracts.",tip:"Use 1-year ACS for big places (65,000+ people) and recent trends; 5-year for small places and tracts."},
+    {n:"Census Reporter",u:"https://censusreporter.org",k:"Survey",t:["Demographics","Income & poverty","Housing"],w:"A friendlier front door to ACS data, with quick profiles for any place.",tip:"Fast way to pull a county or city profile with margins of error shown."},
+    {n:"KIDS COUNT Data Center",u:"https://datacenter.aecf.org",k:"Mixed",t:["Children","Education","Income & poverty","Health"],w:"Annie E. Casey Foundation's child well-being indicators, by state and often by county.",tip:"Texas data here is maintained in partnership with Every Texan. Good for state rankings and trends."},
+    {n:"IPUMS USA",u:"https://usa.ipums.org",k:"Survey",t:["Demographics","Income & poverty","Work"],w:"Harmonized census and ACS microdata (PUMS) for building your own custom estimates.",tip:"Needed when published tables don't have the group you want. Requires free registration and some stats software."},
+    {n:"Census SAIPE",u:"https://www.census.gov/programs-surveys/saipe.html",k:"Modeled",t:["Income & poverty","Children","Education"],w:"Small Area Income and Poverty Estimates for every county and school district.",tip:"Model-based, so more stable than 1-year ACS for small counties."},
+    {n:"Texas Demographic Center",u:"https://demographics.texas.gov",k:"Modeled",t:["Demographics"],w:"State population estimates and projections for Texas counties.",tip:"The go-to for projections. Remember projections are scenarios, not forecasts."},
+    {n:"Texas HHS records and statistics",u:"https://www.hhs.texas.gov/about/records-statistics",k:"Administrative",t:["Health","Food & benefits","Children"],w:"Enrollment and caseload data for SNAP, Medicaid, CHIP, TANF, and WIC.",tip:"Shows who is enrolled, not who is eligible. Pair with ACS to estimate participation rates."},
+    {n:"TEA reports and data",u:"https://tea.texas.gov/reports-and-data",k:"Administrative",t:["Education","Children"],w:"Texas public school enrollment, performance, finance, and accountability reports.",tip:"District and campus level. Watch for changes in accountability rules between years."},
+    {n:"Texas Higher Education Data",u:"https://www.txhighereddata.org",k:"Administrative",t:["Education"],w:"THECB data on college enrollment, completion, and costs, including the Texas Public Higher Education Almanac.",tip:"Institution-level data; useful for comparing systems and tracking completion."},
+    {n:"Texas Labor Market Information",u:"https://texaslmi.com",k:"Survey",t:["Work"],w:"Texas Workforce Commission data on jobs, wages, unemployment, and industries.",tip:"Monthly unemployment rates for counties and metro areas."},
+    {n:"Bureau of Labor Statistics",u:"https://www.bls.gov",k:"Survey",t:["Work","Income & poverty"],w:"National and state employment, wages, and the Consumer Price Index.",tip:"Use CPI to convert old dollars into today's dollars before comparing over time."},
+    {n:"FRED",u:"https://fred.stlouisfed.org",k:"Mixed",t:["Work","Income & poverty","Housing"],w:"Federal Reserve Bank of St. Louis database pulling together thousands of economic series.",tip:"Great for quick trend charts you can download."},
+    {n:"CDC WONDER",u:"https://wonder.cdc.gov",k:"Administrative",t:["Health"],w:"Births, deaths, and causes of death by state and county.",tip:"Small counts are suppressed to protect privacy; combine years for small places."},
+    {n:"County Health Rankings",u:"https://www.countyhealthrankings.org",k:"Mixed",t:["Health"],w:"County-level health outcomes and factors, compiled from many sources.",tip:"Check each measure's original source and year; they vary."},
+    {n:"HUD USER",u:"https://www.huduser.gov",k:"Mixed",t:["Housing"],w:"Fair Market Rents, income limits, and housing affordability (CHAS) data.",tip:"Income limits use Area Median Income (AMI), which is different from the federal poverty level."},
+    {n:"Eviction Lab",u:"https://evictionlab.org",k:"Administrative",t:["Housing"],w:"Eviction filing data and tracking for select cities, including several in Texas.",tip:"Coverage varies by place and year; read the methods notes."},
+    {n:"HHS poverty guidelines",u:"https://aspe.hhs.gov/topics/poverty-economic-mobility/poverty-guidelines",k:"Reference",t:["Income & poverty","Food & benefits"],w:"The federal poverty guidelines (FPL) used to set program eligibility.",tip:"Updated each January. Not the same as the Census poverty thresholds used in statistics."},
+    {n:"Texas Comptroller",u:"https://comptroller.texas.gov",k:"Administrative",t:["Budget & taxes"],w:"State revenue, spending, and economic data, plus local sales tax allocations.",tip:"Look for the transparency section for spending and debt data."},
+    {n:"Legislative Budget Board",u:"https://www.lbb.texas.gov",k:"Administrative",t:["Budget & taxes"],w:"Texas state budget documents, fiscal notes, and performance measures.",tip:"Fiscal notes show the estimated cost of each bill."},
+    {n:"Every Texan",u:"https://everytexan.org",k:"Analysis",t:["Budget & taxes","Income & poverty","Education","Health","Food & benefits","Children"],w:"Policy analysis and research on the Texas economy, budget, and safety net.",tip:"Our reports cite sources in their methods. Reach out to the Research and Data team with questions."}
+  ];
+  var topics=["All"];
+  S.forEach(function(s){s.t.forEach(function(t){if(topics.indexOf(t)<0)topics.push(t)})});
+  var current="All", chipsEl=document.getElementById('chips'), listEl=document.getElementById('srclist');
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  topics.forEach(function(t){
+    var b=document.createElement('button');b.type='button';b.className='chip';b.textContent=t;
+    b.setAttribute('aria-pressed',t===current);
+    b.addEventListener('click',function(){current=t;[].forEach.call(chipsEl.children,function(c){c.setAttribute('aria-pressed',c.textContent===t)});renderSources()});
+    chipsEl.appendChild(b);
+  });
+  function renderSources(){
+    listEl.innerHTML=S.filter(function(s){return current==="All"||s.t.indexOf(current)>=0}).map(function(s){
+      return '<li><a class="name" href="'+esc(s.u)+'" target="_blank" rel="noopener">'+esc(s.n)+'</a><span class="kind">'+esc(s.k)+'</span><span class="what">'+esc(s.w)+'</span><span class="tip"><b>Tip:</b> '+esc(s.tip)+'</span></li>';
+    }).join('');
+  }
+  renderSources();
+
+  /* ---------- checklist ---------- */
+  var Q=[
+    {a:"Where did it come from?",p:["Can you find the original source, not just the article citing it?","Is it a survey, administrative records, or a model?","Who produced it, and do they have a stake in the answer?"]},
+    {a:"Out of whom?",p:["What's the denominator? All residents, all adults, all eligible people?","Does that group match the policy question you're asking?"]},
+    {a:"A count or a rate?",p:["Counts show scale; rates show intensity.","Is a big number just a big population?"]},
+    {a:"How sure are we?",p:["Is there a margin of error? Is the difference bigger than it?","Is the group or place small enough that the estimate is shaky?"]},
+    {a:"Where and when?",p:["What geography, and does it hide variation inside it?","What year or years? 1-year or 5-year? Dollars adjusted for inflation?"]},
+    {a:"Typical for whom?",p:["Median or mean? For income and housing costs, prefer the median.","Does the overall number hide gaps between groups?"]}
+  ];
+  var ck=document.getElementById('checklist');
+  ck.innerHTML=Q.map(function(q,i){
+    return '<div class="q" id="q'+i+'"><label><input type="checkbox" data-i="'+i+'"><span><span class="ask">'+esc(q.a)+'</span></span></label><ul>'+q.p.map(function(p){return '<li>'+esc(p)+'</li>'}).join('')+'</ul></div>';
+  }).join('');
+  function updateCheck(){
+    var boxes=ck.querySelectorAll('input'),n=0;
+    [].forEach.call(boxes,function(b){var on=b.checked;if(on)n++;document.getElementById('q'+b.dataset.i).classList.toggle('done',on)});
+    document.getElementById('meter').style.width=(n/Q.length*100)+'%';
+    document.getElementById('count').textContent=n+' of '+Q.length+' answered';
+  }
+  ck.addEventListener('change',updateCheck);
+  document.getElementById('resetCheck').addEventListener('click',function(){[].forEach.call(ck.querySelectorAll('input'),function(b){b.checked=false});updateCheck()});
+
+  /* ---------- calculator ---------- */
+  var modes=[].slice.call(document.querySelectorAll('.mode'));
+  modes.forEach(function(m){m.addEventListener('click',function(){
+    modes.forEach(function(x){var on=x===m;x.setAttribute('aria-pressed',on);document.getElementById('m-'+x.dataset.mode).classList.toggle('hidden',!on)});
+  })});
+  function num(id){var v=parseFloat(document.getElementById(id).value);return isFinite(v)?v:NaN}
+  function fmt(x){if(!isFinite(x))return '—';var a=Math.abs(x);var d=a>=100?0:a>=10?1:2;return x.toLocaleString(undefined,{maximumFractionDigits:d,minimumFractionDigits:0})}
+
+  function compare(){
+    var aN=document.getElementById('aName').value||'A',bN=document.getElementById('bName').value||'B';
+    var a=num('aEst'),am=num('aMoe'),b=num('bEst'),bm=num('bMoe'),z=parseFloat(document.getElementById('cl').value);
+    var V=document.getElementById('cVerdict'),T=document.getElementById('cText'),F=document.getElementById('cFine'),viz=document.getElementById('cViz');
+    if([a,am,b,bm].some(isNaN)||am<0||bm<0){V.className='verdict';V.textContent='Enter both estimates and margins of error';T.textContent='';F.textContent='';viz.innerHTML='';return}
+    var se1=am/z,se2=bm/z,sed=Math.sqrt(se1*se1+se2*se2),diff=a-b,zs=sed>0?Math.abs(diff)/sed:Infinity,sig=zs>z;
+    var level={1.645:'90%',1.96:'95%',2.576:'99%'}[z];
+    V.className='verdict '+(sig?'yes':'no');
+    V.textContent=sig?'Yes, the difference is statistically significant':'No, the difference isn\u2019t statistically significant';
+    T.textContent=sig?(esc(aN)+' and '+esc(bN)+' differ by '+fmt(Math.abs(diff))+', more than sampling error alone would explain. It\u2019s fair to say '+(diff>0?aN:bN)+' is higher.'):('The gap of '+fmt(Math.abs(diff))+' is within the range sampling error could produce. Say the two are \u201Cstatistically similar,\u201D not that one is higher.');
+    T.textContent=T.textContent.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"');
+    F.textContent='Test statistic '+fmt(zs)+' vs. critical value '+z+' ('+level+' confidence). MOE of the difference: ±'+fmt(sed*z)+'.';
+    // viz
+    var lo=Math.min(a-am,b-bm),hi=Math.max(a+am,b+bm),pad=(hi-lo)*0.12||1;lo-=pad;hi+=pad;
+    var W=600,x=function(v){return 20+(v-lo)/(hi-lo)*(W-40)};
+    function row(y,e,m,c,label){
+      return '<text x="20" y="'+(y-14)+'" font-size="14" fill="var(--slate)" font-family="Public Sans, sans-serif">'+esc(label)+': '+fmt(e)+' (\u00B1'+fmt(m)+')</text>'+
+      '<rect x="'+x(e-m)+'" y="'+(y-6)+'" width="'+Math.max(2,x(e+m)-x(e-m))+'" height="12" rx="6" fill="'+c+'" opacity="0.35"/>'+
+      '<circle cx="'+x(e)+'" cy="'+y+'" r="7" fill="'+c+'"/>';
+    }
+    var ov=Math.max(0,Math.min(a+am,b+bm)-Math.max(a-am,b-bm));
+    viz.innerHTML='<svg viewBox="0 0 '+W+' 132" role="img" aria-label="Interval chart: '+esc(aN)+' '+fmt(a)+' plus or minus '+fmt(am)+'; '+esc(bN)+' '+fmt(b)+' plus or minus '+fmt(bm)+'">'+
+      row(42,a,am,'var(--bar1)',aN)+row(104,b,bm,'var(--bar2)',bN)+'</svg>'+
+      '<p class="fine" style="margin-top:6px">'+(ov>0?'The ranges overlap. Overlap doesn\u2019t always mean \u201Cno difference,\u201D which is why the test above is more reliable than eyeballing.':'The ranges don\u2019t overlap.')+'</p>';
+  }
+  ['aName','aEst','aMoe','bName','bEst','bMoe','cl'].forEach(function(id){document.getElementById(id).addEventListener('input',compare)});
+  compare();
+
+  function reliable(){
+    var e=num('rEst'),m=num('rMoe'),z=parseFloat(document.getElementById('rCl').value);
+    var V=document.getElementById('rVerdict'),T=document.getElementById('rText');
+    if(isNaN(e)||isNaN(m)||m<0){V.className='verdict';V.textContent='Enter an estimate and its margin of error';T.textContent='';return}
+    if(e===0){V.className='verdict no';V.textContent='Can\u2019t compute for an estimate of zero';T.textContent='A zero estimate in small areas often means the survey didn\u2019t sample anyone in that group, not that there are none.';return}
+    var cv=(m/z)/Math.abs(e)*100;
+    var label,cls,msg;
+    if(cv<15){label='Reliable';cls='yes';msg='This estimate is reasonably precise.'}
+    else if(cv<=30){label='Use with caution';cls='no';msg='Okay to report, but mention the margin of error and avoid fine comparisons.'}
+    else{label='Unreliable';cls='no';msg='Consider combining years (5-year data), combining geographies, or broadening the group.'}
+    V.className='verdict '+cls;V.textContent=label+' \u2014 CV of '+fmt(cv)+'%';
+    T.textContent=msg+' The true value is likely between '+fmt(e-m)+' and '+fmt(e+m)+'.';
+  }
+  ['rEst','rMoe','rCl'].forEach(function(id){document.getElementById(id).addEventListener('input',reliable)});
+  reliable();
+
+  var sumRows=document.getElementById('sumRows'),rowCount=0;
+  function addRow(est,moe){
+    rowCount++;
+    var d=document.createElement('div');d.className='pair';d.style.marginBottom='4px';
+    d.innerHTML='<label class="field"><span>Estimate '+rowCount+'</span><input type="number" inputmode="decimal" step="any" class="se" value="'+(est==null?'':est)+'"></label><label class="field"><span>MOE '+rowCount+' (\u00B1)</span><input type="number" inputmode="decimal" step="any" min="0" class="sm" value="'+(moe==null?'':moe)+'"></label>';
+    sumRows.appendChild(d);
+  }
+  function sum(){
+    var es=sumRows.querySelectorAll('.se'),ms=sumRows.querySelectorAll('.sm'),tot=0,sq=0,n=0;
+    for(var i=0;i<es.length;i++){var e=parseFloat(es[i].value),m=parseFloat(ms[i].value);if(isFinite(e)&&isFinite(m)&&m>=0){tot+=e;sq+=m*m;n++}}
+    var V=document.getElementById('sVerdict'),T=document.getElementById('sText');
+    if(n<2){V.className='verdict';V.textContent='Enter at least two estimates';T.textContent='';return}
+    var moe=Math.sqrt(sq);
+    V.className='verdict yes';V.textContent='Total: '+fmt(tot)+' (\u00B1'+fmt(moe)+')';
+    T.textContent='Combined from '+n+' estimates. Notice the combined MOE is smaller than simply adding the MOEs together.';
+  }
+  addRow(4200,610);addRow(3100,540);
+  sumRows.addEventListener('input',sum);
+  document.getElementById('addRow').addEventListener('click',function(){addRow();sum();var ins=sumRows.querySelectorAll('.se');ins[ins.length-1].focus()});
+  sum();
+
+  /* ---------- glossary ---------- */
+  var G=[
+    ["ACS (American Community Survey)","The Census Bureau's ongoing survey of about 3.5 million addresses a year. Source of most local data on income, poverty, housing, education, and more."],
+    ["1-year vs. 5-year estimates","1-year ACS data covers places with 65,000+ people and is the most current. 5-year data pools five years of responses to cover every place down to census tracts, but describes a period, not a single year."],
+    ["Margin of error (MOE)","The range around a survey estimate where the true value likely falls. ACS publishes MOEs at 90% confidence.",'Example: 18.2% ± 2.1 means likely between 16.1% and 20.3%.'],
+    ["Statistical significance","Whether a difference between two estimates is bigger than sampling error alone would produce. Not the same as whether it matters for policy."],
+    ["Coefficient of variation (CV)","How big the uncertainty is relative to the estimate. A quick way to judge whether a small-area number is reliable enough to use."],
+    ["Denominator","The group a rate or percentage is calculated out of. Changing it changes the story."],
+    ["Count vs. rate","A count is how many; a rate is how many out of a group. Counts show scale, rates show intensity."],
+    ["Median","The middle value when everything is lined up. Half are above, half below. Preferred for income, wealth, and housing costs."],
+    ["Mean (average)","The total divided by the number of people. Pulled up or down by extreme values."],
+    ["Percentile","Where a value ranks out of 100. A tract at the 80th percentile scores higher than 80% of tracts."],
+    ["Index (composite measure)","A single score built by combining several indicators. Every choice of indicators, weights, and methods shapes the result."],
+    ["Administrative data","Records collected to run a program, like SNAP caseloads or school enrollment. Complete for people in the program, silent on people outside it."],
+    ["Microdata (PUMS)","Individual, anonymized survey responses that let analysts build custom estimates for groups not in published tables."],
+    ["Federal poverty level (FPL)","The HHS poverty guidelines used to set program eligibility, like 130% FPL for SNAP gross income. Updated every January."],
+    ["Poverty threshold","The Census Bureau's measure used to count how many people are in poverty. Similar to FPL but not identical."],
+    ["Supplemental Poverty Measure (SPM)","An alternative poverty measure that counts benefits like SNAP and tax credits and subtracts costs like taxes and medical expenses."],
+    ["Area Median Income (AMI)","HUD's local median family income, used for housing program eligibility. Different from FPL."],
+    ["Nominal vs. real dollars","Nominal dollars are as reported at the time. Real dollars are adjusted for inflation so you can compare across years."],
+    ["Census tract","A small, fairly stable statistical area, usually 1,200 to 8,000 people. Roughly neighborhood-sized."],
+    ["Disaggregation","Breaking data out by race, ethnicity, gender, age, or place to reveal gaps an overall number hides."],
+    ["Suppression","Withholding small numbers to protect privacy or avoid unreliable estimates. Often why a county or group is missing."],
+    ["Undercount","When a census or survey misses people. Young children and some communities are consistently harder to count."]
+  ];
+  var gl=document.getElementById('gloss'),ge=document.getElementById('gEmpty');
+  function renderGloss(q){
+    q=(q||'').trim().toLowerCase();
+    var items=G.filter(function(g){return !q||(g[0]+' '+g[1]).toLowerCase().indexOf(q)>=0});
+    gl.innerHTML=items.map(function(g){return '<div><dt>'+esc(g[0])+'</dt><dd>'+esc(g[1])+(g[2]?' <span class="eg">'+esc(g[2])+'</span>':'')+'</dd></div>'}).join('');
+    ge.classList.toggle('hidden',items.length>0);
+  }
+  document.getElementById('gq').addEventListener('input',function(e){renderGloss(e.target.value)});
+  renderGloss();
+})();
+</script>
+</body>
+</html>
